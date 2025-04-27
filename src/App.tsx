@@ -37,12 +37,12 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     fetchWeather();
   };
 
-  const getWeatherIcon = (iconCode) => {
+  const getWeatherIcon = (iconCode: string) => {
     return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
   };
 
