@@ -2,33 +2,48 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 
+
 interface WeatherData {
   name: string;
-  sys: {
-    country: string;
-  };
-  main: {
-    temp: number;
-    feels_like: number;
-    humidity: number;
-    pressure: number;
-  };
-  wind: {
-    speed: number;
-  };
-  weather: Array<{
-    description: string;
-    icon: string;
-  }>;
+  sys: { country: string };
+  main: { temp: number; feels_like: number; humidity: number };
+  wind: { speed: number };
+  weather: Array<{ description: string; icon: string }>;
   dt: number;
 }
+
+
+interface UnitSwitcherProps {
+  unit: 'metric' | 'imperial';
+  onUnitChange: (unit: 'metric' | 'imperial') => void;
+}
+
+const UnitSwitcher = ({ unit, onUnitChange }: UnitSwitcherProps) => {
+  return (
+    <div className="unit-switcher">
+      <button
+        className={unit === 'metric' ? 'active' : ''}
+        onClick={() => onUnitChange('metric')}
+      >
+        °C
+      </button>
+      <button
+        className={unit === 'imperial' ? 'active' : ''}
+        onClick={() => onUnitChange('imperial')}
+      >
+        °F
+      </button>
+    </div>
+  );
+};
 
 function App() {
   const [city, setCity] = useState('Москва');
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [fadeIn, setFadeIn] = useState(false);
+  const [unit, setUnit] = useState<'metric' | 'imperial'>('metric');
+  const [shouldAnimate, setShouldAnimate] = useState(false);
 
   const API_KEY = '34673816897e5d946d5d7b3f5cf6d68b';
 
@@ -40,14 +55,14 @@ function App() {
     
     setLoading(true);
     setError('');
-    setFadeIn(false);
+    setShouldAnimate(false); 
     
     try {
-      const response = await axios.get<WeatherData>(
+      const response = await axios.get(
         `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric&lang=ru`
       );
       setWeather(response.data);
-      setTimeout(() => setFadeIn(true), 50); // Задержка для плавного появления
+      setTimeout(() => setShouldAnimate(true), 50);
     } catch (err) {
       setError('Город не найден');
       setWeather(null);
@@ -58,7 +73,7 @@ function App() {
 
   useEffect(() => {
     fetchWeather();
-  }, []);
+  }, [unit]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,27 +82,6 @@ function App() {
 
   const getWeatherIcon = (iconCode: string) => {
     return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
-  };
-
-  const UnitSwitcher = () => {
-    const [unit, setUnit] = useUnit('metric');
-  
-    return (
-      <div className="unit-switcher">
-        <button 
-          className={unit === 'metric' ? 'active' : ''}
-          onClick={() => setUnit('metric')}
-        >
-          °C
-        </button>
-        <button
-          className={unit === 'imperial' ? 'active' : ''}
-          onClick={() => setUnit('imperial')}
-        >
-          °F
-        </button>
-      </div>
-    );
   };
 
   return (
@@ -139,7 +133,7 @@ function App() {
         )}
 
         {weather && (
-          <div className={`weather-window ${fadeIn ? 'animate-fade-in' : ''}`}>
+          <div className={`weather-window ${shouldAnimate ? 'animate-fade-in' : ''}`}>
             <div className="weather-header">
               <h2>
                 {weather.name}, {weather.sys?.country}
