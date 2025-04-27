@@ -211,3 +211,171 @@ body {
     padding: 20px 15px;
   }
 }
+
+/* Анимации */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { 
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from { 
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popIn {
+  0% { 
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  80% { 
+    transform: scale(1.1);
+  }
+  100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -468px 0; }
+  100% { background-position: 468px 0; }
+}
+
+/* Классы анимаций */
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-fade-in-delay {
+  animation: fadeIn 0.5s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.5s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 0.5s ease-out forwards;
+}
+
+.animate-pop-in {
+  animation: popIn 0.5s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Скелетон для загрузки */
+.weather-skeleton {
+  padding: 25px;
+}
+
+.skeleton-header {
+  height: 60px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+.skeleton-main {
+  height: 120px;
+  margin-bottom: 25px;
+  border-radius: 8px;
+}
+
+.skeleton-details {
+  height: 80px;
+  border-radius: 8px;
+}
+
+.shimmer {
+  background: linear-gradient(to right, #f0f0f0 8%, #e0e0e0 18%, #f0f0f0 33%);
+  background-size: 800px 104px;
+  animation: shimmer 1.5s infinite linear;
+}
+
+/* Дополнительные стили для кнопки загрузки */
+.search-button.loading {
+  position: relative;
+  color: transparent;
+}
+
+.loading-text {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+}
+
+.button-loader {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.unit-switcher {
+  display: flex;
+  gap: 8px;
+}
+
+.unit-switcher button {
+  background: none;
+  border: 1px solid #ddd;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.unit-switcher button.active {
+  background: #3498db;
+  color: white;
+  border-color: #3498db;
+}

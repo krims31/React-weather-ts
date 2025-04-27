@@ -17,9 +17,9 @@ interface WeatherData {
     speed: number;
   };
   weather: Array<{
-    description: string,
+    description: string;
     icon: string;
-  }>
+  }>;
   dt: number;
 }
 
@@ -28,6 +28,7 @@ function App() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fadeIn, setFadeIn] = useState(false);
 
   const API_KEY = '34673816897e5d946d5d7b3f5cf6d68b';
 
@@ -39,14 +40,16 @@ function App() {
     
     setLoading(true);
     setError('');
+    setFadeIn(false);
     
     try {
       const response = await axios.get<WeatherData>(
         `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric&lang=ru`
       );
       setWeather(response.data);
+      setTimeout(() => setFadeIn(true), 50); // Задержка для плавного появления
     } catch (err) {
-      setError('Город не найден. Попробуйте другой.');
+      setError('Город не найден');
       setWeather(null);
     } finally {
       setLoading(false);
@@ -55,7 +58,6 @@ function App() {
 
   useEffect(() => {
     fetchWeather();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -67,12 +69,25 @@ function App() {
     return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
   };
 
-  const formatDate = () => {
-    return new Date().toLocaleDateString('ru-RU', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long'
-    });
+  const UnitSwitcher = () => {
+    const [unit, setUnit] = useUnit('metric');
+  
+    return (
+      <div className="unit-switcher">
+        <button 
+          className={unit === 'metric' ? 'active' : ''}
+          onClick={() => setUnit('metric')}
+        >
+          °C
+        </button>
+        <button
+          className={unit === 'imperial' ? 'active' : ''}
+          onClick={() => setUnit('imperial')}
+        >
+          °F
+        </button>
+      </div>
+    );
   };
 
   return (
@@ -95,27 +110,46 @@ function App() {
           <button 
             type="submit" 
             disabled={loading}
-            className="search-button"
+            className={`search-button ${loading ? 'loading' : ''}`}
             aria-label="Получить погоду"
           >
             {loading ? (
-              <span className="button-loader" aria-hidden="true"></span>
+              <>
+                <span className="button-loader"></span>
+                <span className="loading-text">Загрузка...</span>
+              </>
             ) : (
               'Узнать погоду'
             )}
           </button>
         </form>
 
-        {error && <p className="error-message">{error}</p>}
+        {error && (
+          <div className="error-message animate-fade-in">
+            {error}
+          </div>
+        )}
+
+        {loading && !weather && (
+          <div className="weather-skeleton">
+            <div className="skeleton-header shimmer"></div>
+            <div className="skeleton-main shimmer"></div>
+            <div className="skeleton-details shimmer"></div>
+          </div>
+        )}
 
         {weather && (
-          <div className="weather-window">
+          <div className={`weather-window ${fadeIn ? 'animate-fade-in' : ''}`}>
             <div className="weather-header">
               <h2>
                 {weather.name}, {weather.sys?.country}
               </h2>
               <p className="weather-date">
-                {formatDate()}
+                {new Date(weather.dt * 1000).toLocaleDateString('ru-RU', {
+                  weekday: 'long',
+                  day: 'numeric',
+                  month: 'long'
+                })}
               </p>
             </div>
 
@@ -125,36 +159,36 @@ function App() {
                   <img 
                     src={getWeatherIcon(weather.weather[0].icon)} 
                     alt={weather.weather[0]?.description || 'Погодные условия'}
-                    className="weather-icon"
+                    className="weather-icon animate-float"
                     loading="lazy"
                   />
                 )}
-                <span className="temperature">
+                <span className="temperature animate-pop-in">
                   {Math.round(weather.main?.temp)}°C
                 </span>
               </div>
               
-              <p className="weather-description">
+              <p className="weather-description animate-fade-in-delay">
                 {weather.weather[0]?.description}
               </p>
             </div>
 
             <div className="weather-details">
-              <div className="detail-card">
+              <div className="detail-card animate-slide-in-left">
                 <span className="detail-label">Ощущается как</span>
                 <span className="detail-value">
                   {Math.round(weather.main?.feels_like)}°C
                 </span>
               </div>
               
-              <div className="detail-card">
+              <div className="detail-card animate-slide-in-up">
                 <span className="detail-label">Влажность</span>
                 <span className="detail-value">
                   {weather.main?.humidity}%
                 </span>
               </div>
               
-              <div className="detail-card">
+              <div className="detail-card animate-slide-in-right">
                 <span className="detail-label">Ветер</span>
                 <span className="detail-value">
                   {weather.wind?.speed} м/с
@@ -164,7 +198,7 @@ function App() {
           </div>
         )}
 
-        <div className="app-footer">
+        <div className="app-footer animate-fade-in">
           <p>Данные предоставлены OpenWeatherMap</p>
         </div>
       </div>
