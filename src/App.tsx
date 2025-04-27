@@ -13,37 +13,14 @@ interface WeatherData {
 }
 
 
-interface UnitSwitcherProps {
-  unit: 'metric' | 'imperial';
-  onUnitChange: (unit: 'metric' | 'imperial') => void;
-}
-
-const UnitSwitcher = ({ unit, onUnitChange }: UnitSwitcherProps) => {
-  return (
-    <div className="unit-switcher">
-      <button
-        className={unit === 'metric' ? 'active' : ''}
-        onClick={() => onUnitChange('metric')}
-      >
-        °C
-      </button>
-      <button
-        className={unit === 'imperial' ? 'active' : ''}
-        onClick={() => onUnitChange('imperial')}
-      >
-        °F
-      </button>
-    </div>
-  );
-};
-
 function App() {
   const [city, setCity] = useState('Москва');
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [unit, setUnit] = useState<'metric' | 'imperial'>('metric');
   const [shouldAnimate, setShouldAnimate] = useState(false);
+
+
 
   const API_KEY = '34673816897e5d946d5d7b3f5cf6d68b';
 
@@ -73,7 +50,7 @@ function App() {
 
   useEffect(() => {
     fetchWeather();
-  }, [unit]);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
