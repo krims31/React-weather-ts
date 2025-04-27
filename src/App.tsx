@@ -2,9 +2,30 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 
+interface WeatherData {
+  name: string;
+  sys: {
+    country: string;
+  };
+  main: {
+    temp: number;
+    feels_like: number;
+    humidity: number;
+    pressure: number;
+  };
+  wind: {
+    speed: number;
+  };
+  weather: Array<{
+    description: string,
+    icon: string;
+  }>
+  dt: number;
+}
+
 function App() {
   const [city, setCity] = useState('Москва');
-  const [weather, setWeather] = useState(null);
+  const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -20,7 +41,7 @@ function App() {
     setError('');
     
     try {
-      const response = await axios.get(
+      const response = await axios.get<WeatherData>(
         `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric&lang=ru`
       );
       setWeather(response.data);
